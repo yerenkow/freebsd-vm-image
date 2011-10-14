@@ -1,1 +1,21 @@
-A set of scripts, to make easy of building FreeBSD VM images
+A set of scripts, to make easy of building FreeBSD VM images.
+
+How to use it:
+
+    1. Install bash, subversion, VirtualBox (for converting images; will be optional in future)
+    2. Get this sources
+    3. Run manually or by cron cd scripts && ./cron-auto-action.sh $V
+    4. $V can be 8, 9  as FreeBSD Stable Version.
+    5. Enjoy falling lines of compiling etc;
+    6. Go to builds/$V and enjoy built images there (.img .vdi .vdi.zip .vdi.xz)
+    7. Write some issue/bug report/feature request/enhancement proposal
+
+Advanced usage:
+    1. Create any dir, for example cs scripts && cd ../sources && mkdir MYTEST && svn co ANY_TAG_OR_BRANCH
+    2. Run manually or by cron cd scripts && ./cron-auto-action.sh MYTEST 17 (17 is the number for MD device, it's must be a number :) )
+
+Need to be done:
+    Specifying ARCH for building;
+    Adding a packet-list to install it
+    More fine-tune configuration of Image size, etc;
+
