@@ -19,3 +19,5 @@ Need to be done:
     Adding a packet-list to install it
     More fine-tune configuration of Image size, etc;
 
+Bugs:
+    Somehow gpart slicing is broken now, need more investigation here :)
