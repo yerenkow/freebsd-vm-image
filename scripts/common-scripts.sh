@@ -8,6 +8,8 @@ statesdir="../states"
 
 mountpath="../mount/$version"
 
+[ -d "$sourcedir" ] || mkdir -p "$sourcedir"
+
 [ -d "$mountpath" ] || mkdir -p "$mountpath"
 
 mountdir=`cd $mountpath && pwd`

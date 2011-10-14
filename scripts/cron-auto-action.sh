@@ -22,10 +22,12 @@ builtlock="$statesdir/$version/built-r${svnver}.OK"
 imagelock="$statesdir/$version/image-r${svnver}.OK"
 vdilock="$statesdir/$version/vdi-r${svnver}.OK"
 
+if [ -n "$svnver" ]; then
+
 #step 1; Check if we have build system;
 if [ ! -f $builtlock ]; then
     #build here;
-#    source build-distrib.sh
+    source build-distrib.sh
     cd $OURDIR
     touch $builtlock
 fi
@@ -48,6 +50,7 @@ if [ ! -f $vdilock ]; then
     source convert-images.sh
     cd $OURDIR
     touch $vdilock
+fi
 fi
 
 #step 4; If all went OK, or failed, anyway - update sources.
