@@ -16,12 +16,6 @@ EOF
 
 sync && sleep 60
 
-#gpart bootcode -b $mountdir/boot/pmbr md$u
-
-#gpart bootcode -p $mountdir/boot/gptboot -i 1 md$u
-
-# just to make sure we can umount it now
-
 gpart bootcode -b $mountdir/boot/boot0 md${u}
 
 gpart bootcode -b $mountdir/boot/boot md${u}s1
