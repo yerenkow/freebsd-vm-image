@@ -2,7 +2,7 @@
 
 cd $sourcedir/$version
 
-nice make -j 4 buildworld
+nice make -j 4 buildworld TARGET=$arch
 
-nice make -j 4 buildkernel
+nice make -j 4 buildkernel TARGET=$arch
 

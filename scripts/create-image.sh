@@ -8,14 +8,14 @@ truncate -s 4G $imagefile
 
 mdconfig -af $imagefile -u $u
 
-gpart create -s gpt /dev/md$u
+fdisk -BI /dev/md${u}
+gpart create -s mbr md${u}
+gpart add -t freebsd -i 1 md${u}
+gpart create -s BSD md${u}s1
+gpart set -a active -i 1 md${u}
+gpart add -s 1536M -t freebsd-ufs -i 1 md${u}s1
+gpart add -t freebsd-swap -i 2 md${u}s1
 
-gpart add -s 64k -t freebsd-boot -i 1 md$u
+newfs -Uj /dev/md${u}s1a
 
-gpart add -t freebsd-ufs -s 2G -i 2 md$u
-
-gpart add -t freebsd-swap -i 3 md$u
-
-newfs -Uj /dev/md${u}p2
-
-mount -o rw,noatime /dev/md${u}p2 $mountdir
+mount -o rw,noatime /dev/md${u}s1a $mountdir

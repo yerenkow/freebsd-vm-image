@@ -2,12 +2,12 @@
 
 if [ -z "$1" ]; then
     echo "Usage: $0 DIR  or $0 DIR MDNUM"
-    exit
+    exit 0;
 fi
 
 OURDIR=`pwd`
 
-echo $OURDIR
+echo $OURDIR;
 
 version=$1
 u=$1
@@ -18,9 +18,9 @@ fi
 
 source common-scripts.sh
 
-builtlock="$statesdir/$version/built-r${svnver}.OK"
-imagelock="$statesdir/$version/image-r${svnver}.OK"
-vdilock="$statesdir/$version/vdi-r${svnver}.OK"
+builtlock="$statesdir/$version/built-$arch-r${svnver}.OK"
+imagelock="$statesdir/$version/image-$arch-r${svnver}.OK"
+vdilock="$statesdir/$version/vdi-$arch-r${svnver}.OK"
 
 if [ -n "$svnver" ]; then
 
@@ -51,6 +51,7 @@ if [ ! -f $vdilock ]; then
     cd $OURDIR
     touch $vdilock
 fi
+
 fi
 
 #step 4; If all went OK, or failed, anyway - update sources.

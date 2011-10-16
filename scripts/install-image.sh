@@ -2,27 +2,28 @@
 
 cd $sourcedir/$version
 
-make installworld DESTDIR=$mountdir
-
-make distribution DESTDIR=$mountdir
-
-make installkernel DESTDIR=$mountdir
+make installkernel DESTDIR=$mountdir TARGET=$arch
+make installworld DESTDIR=$mountdir TARGET=$arch
+make distribution DESTDIR=$mountdir TARGET=$arch
 
 cat > $mountdir/etc/fstab << EOF
-/dev/ada0p2	/	ufs	rw,noatime	1	1
-/dev/ada0p3	none	swap	sw		0	0
+/dev/ada0s1a	/	ufs	rw,noatime	1	1
+/dev/ada0s1b	none	swap	sw		0	0
 EOF
 
 cat > $mountdir/etc/rc.conf << EOF
 EOF
 
-sync && sleep 30
+sync && sleep 60
 
-gpart bootcode -b $mountdir/boot/pmbr md$u
+#gpart bootcode -b $mountdir/boot/pmbr md$u
 
-gpart bootcode -p $mountdir/boot/gptboot -i 1 md$u
-
-sync && sleep 30
+#gpart bootcode -p $mountdir/boot/gptboot -i 1 md$u
 
 # just to make sure we can umount it now
 
+gpart bootcode -b $mountdir/boot/boot0 md${u}
+
+gpart bootcode -b $mountdir/boot/boot md${u}s1
+
+sync && sleep 10

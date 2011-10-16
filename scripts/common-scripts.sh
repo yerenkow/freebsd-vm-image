@@ -6,7 +6,9 @@ builddir="../builds"
 
 statesdir="../states"
 
-mountpath="../mount/$version"
+arch="i386"
+
+mountpath="../mount/$version-$arch"
 
 [ -d "$sourcedir" ] || mkdir -p "$sourcedir"
 
@@ -18,11 +20,11 @@ mountdir=`cd $mountpath && pwd`
 
 [ -d "$statesdir/$version" ] || mkdir -p "$statesdir/$version"
 
-svnremver=`cd $sourcedir/$version && svn info | grep Revision | awk '{split($0, f, " "); print f[2];}' `
+svnremver=`cd $sourcedir/$version && svn info | grep "Revision" | awk '{split($0, f, " "); print f[2];}' `
 
 svnver=`cd $sourcedir/$version && svn info | grep "Last Changed Rev" | awk '{split($0, f, " "); print f[4];}' `
 
-commonfilename="$builddir/$version/FreeBSD-$version-r$svnver-`date +'%Y-%m-%d'`"
+commonfilename="$builddir/$version/FreeBSD-$version-$arch-r$svnver-`date +'%Y-%m-%d'`"
 
 imagefile="$commonfilename.img"
 
