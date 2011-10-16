@@ -2,7 +2,7 @@ A set of scripts, to make easy of building FreeBSD VM images.
 
 How to use it:
 
-    1. Install bash, subversion, VirtualBox (for converting images; will be optional in future)
+    1. Install bash, subversion, VirtualBox (VB for converting images; will be optional in future)
     2. Get this sources
     3. Run manually or by cron cd scripts && ./cron-auto-action.sh $V
     4. $V can be 8, 9  as FreeBSD Stable Version.
@@ -15,9 +15,9 @@ Advanced usage:
     2. Run manually or by cron cd scripts && ./cron-auto-action.sh MYTEST 17 (17 is the number for MD device, it's must be a number :) )
 
 Need to be done:
-    Specifying ARCH for building;
+    Specifying ARCH other than i386 (currently hardcoded) for building;
     Adding a packet-list to install it
     More fine-tune configuration of Image size, etc;
 
 Bugs:
-    Somehow gpart slicing is broken now, need more investigation here :)
+    Switched from gpart to MBR, due to possible bug PR#161677
