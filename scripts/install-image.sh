@@ -20,4 +20,6 @@ gpart bootcode -b $mountdir/boot/boot0 md${u}
 
 gpart bootcode -b $mountdir/boot/boot md${u}s1
 
-sync && sleep 10
+sync && sleep 60
+
+. install-packages-kde4.sh

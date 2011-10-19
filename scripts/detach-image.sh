@@ -1,8 +1,10 @@
 #!/bin/sh
 
-#yep, it's not safe. todo fix
-cp $mountdir/boot/boot0 /tmp/boot0
+sync && sleep 30
+umount $mountdir
 
+#just in case;
+sync && sleep 30
 umount $mountdir
 
 #gpart bootcode -b /tmp/boot0 md$u
