@@ -6,9 +6,11 @@ builddir="../builds"
 
 statesdir="../states"
 
-arch="i386"
+configdir="../config"
 
-mountpath="../mount/$version-$arch"
+arch="amd64"
+
+mountpath="../mount/$version-${arch}${mod}"
 
 [ -d "$sourcedir" ] || mkdir -p "$sourcedir"
 
@@ -24,7 +26,7 @@ svnremver=`cd $sourcedir/$version && svn info | grep "Revision" | awk '{split($0
 
 svnver=`cd $sourcedir/$version && svn info | grep "Last Changed Rev" | awk '{split($0, f, " "); print f[4];}' `
 
-commonfilename="$builddir/$version/FreeBSD-$version-$arch-r$svnver-`date +'%Y-%m-%d'`"
+commonfilename="$builddir/$version/FreeBSD-${version}${mod}-$arch-r$svnver-`date +'%Y-%m-%d'`"
 
 imagefile="$commonfilename.img"
 

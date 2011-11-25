@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd $sourcedir/$version
+cd $sourcedir/${version}${mod}
 
 make installkernel DESTDIR=$mountdir TARGET=$arch
 make installworld DESTDIR=$mountdir TARGET=$arch
@@ -21,5 +21,3 @@ gpart bootcode -b $mountdir/boot/boot0 md${u}
 gpart bootcode -b $mountdir/boot/boot md${u}s1
 
 sync && sleep 60
-
-. install-packages-kde4.sh

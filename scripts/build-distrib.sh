@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd $sourcedir/$version
+cd $sourcedir/$version${mod}
 
 nice make -j 4 buildworld TARGET=$arch
 

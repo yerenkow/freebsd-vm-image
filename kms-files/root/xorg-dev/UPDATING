@@ -1,0 +1,12 @@
+- We restart the xorg report.
+
+20110409
+    mesa stuff is works now, but need a lot cleanup
+    USE_PYTHON and py-libxml2 is now must have dependens
+    it should go to bsd.mesalib
+    dri patch-configre should be global
+
+x11/xmh -> xbitmaps
+include/X11/include/bitmaps/black6 box6
+
+

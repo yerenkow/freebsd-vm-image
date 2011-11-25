@@ -1,3 +1,5 @@
 #!/bin/sh
 
-mount -o rw,noatime /dev/md${u}p1 $mountdir
+mdconfig -af $imagefile -u $u
+
+mount -o rw,noatime /dev/md${u}s1 $mountdir
