@@ -13,11 +13,25 @@ How to use it:
 Advanced usage:
     1. Create any dir, for example cs scripts && cd ../sources && mkdir MYTEST && svn co ANY_TAG_OR_BRANCH
     2. Run manually or by cron cd scripts && ./cron-auto-action.sh MYTEST 17 (17 is the number for MD device, it's must be a number :) )
+    3. Run manually or by cron cd scripts && ./cron-auto-action.sh MYTEST 17 KDE48 (17 is the number for MD device, it's must be a number :) , KDE48 is a name of "mod")
 
 Need to be done:
     Specifying ARCH other than i386 (currently hardcoded) for building;
-    Adding a packet-list to install it
     More fine-tune configuration of Image size, etc;
+    Create image for testing KDE 4.8 Beta
+    Create image for testing BHyVe
+    Create image for testing laptops (You came into market with flash, boot laptop, run tests, dmesg etc, store all device's info, logs, etc - and send them to analyse)
 
 Bugs:
     Switched from gpart to MBR, due to possible bug PR#161677
+
+Update:
+    2011-11-25
+	9.0 no more support KMS (If I'm not mistaken) because of changes in sys/vm/device_pager.c, kib@'s patch no more applied.
+	Probably, this file can be copied from 10, but I'm not sure.
+	
+	So, I added files which required to build KMS, but not sure if it's currently in need. Will use them for build 10.0-image though.
+	Also, I made easier to create custom scripts. For example, if you want to build image for some project, like kde48b for 9, you should 
+	provide such files: config/build-distrib-9-kde48b.sh and config/post-install-9-kde48b.sh. You can take files dedicated to KMS as an example.
+	
+	P.S. Anyone willing to help creating some image? :)
