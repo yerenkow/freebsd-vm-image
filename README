@@ -1,37 +1,10 @@
-A set of scripts, to make easy of building FreeBSD VM images.
+Currently I'm working on rewriting image-creating scripts, in scripts-v2 directory.
 
-How to use it:
+Main run scripts called function after function, and storing state to directory.
+Config file for this is pretty simple.
+Note - that to build image you need to have spare space in any of disks (I mean real, unpartitioned space).
+Since `mdconfig` under FreeBSD is currently lagging lag, it's waaaaay faster to have separate partition as test build.
 
-    1. Install bash, subversion, VirtualBox (VB for converting images; will be optional in future)
-    2. Get this sources
-    3. Run manually or by cron cd scripts && ./cron-auto-action.sh $V
-    4. $V can be 8, 9  as FreeBSD Stable Version.
-    5. Enjoy falling lines of compiling etc;
-    6. Go to builds/$V and enjoy built images there (.img .vdi .vdi.zip .vdi.xz)
-    7. Write some issue/bug report/feature request/enhancement proposal
-
-Advanced usage:
-    1. Create any dir, for example cs scripts && cd ../sources && mkdir MYTEST && svn co ANY_TAG_OR_BRANCH
-    2. Run manually or by cron cd scripts && ./cron-auto-action.sh MYTEST 17 (17 is the number for MD device, it's must be a number :) )
-    3. Run manually or by cron cd scripts && ./cron-auto-action.sh MYTEST 17 KDE48 (17 is the number for MD device, it's must be a number :) , KDE48 is a name of "mod")
-
-Need to be done:
-    Specifying ARCH other than i386 (currently hardcoded) for building;
-    More fine-tune configuration of Image size, etc;
-    Create image for testing KDE 4.8 Beta
-    Create image for testing BHyVe
-    Create image for testing laptops (You came into market with flash, boot laptop, run tests, dmesg etc, store all device's info, logs, etc - and send them to analyse)
-
-Bugs:
-    Switched from gpart to MBR, due to possible bug PR#161677
-
-Update:
-    2011-11-25
-	9.0 no more support KMS (If I'm not mistaken) because of changes in sys/vm/device_pager.c, kib@'s patch no more applied.
-	Probably, this file can be copied from 10, but I'm not sure.
-	
-	So, I added files which required to build KMS, but not sure if it's currently in need. Will use them for build 10.0-image though.
-	Also, I made easier to create custom scripts. For example, if you want to build image for some project, like kde48b for 9, you should 
-	provide such files: config/build-distrib-9-kde48b.sh and config/post-install-9-kde48b.sh. You can take files dedicated to KMS as an example.
-	
-	P.S. Anyone willing to help creating some image? :)
+Current problems:
+ - devel/icu on CURRENT is failed to build (workaround Makefile present, with tests disabled)
+ - problems with miniruby / automoc ( hangs in umtxn state, need more investigate on this)
