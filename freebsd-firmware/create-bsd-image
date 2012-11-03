@@ -1,0 +1,61 @@
+#!/bin/sh
+
+#here we have our SRC tree.
+dir="/zstorage/src-clone"
+#handy to have chosen md num for build.
+md="7"
+#mount point to install there as DESTDIR
+mnt="/mnt"
+
+getSvnRevision(){
+# returns SVN rev as number from given dir
+#1 - dirpath
+svnrev=`cd $1 && svn info | grep "Last Changed Rev" | awk '{split($0, f, " "); print f[4];}' `
+echo $svnrev
+}
+
+
+rev=`getSvnRevision "$dir"`
+echo "Going create GPT image for $dir = $rev ..."
+echo "Assuming all is built."
+mdconfig -a -t malloc -s 750M -u $md
+gpart create -s GPT md$md
+gpart add -t freebsd-boot -s 128k md$md
+gpart add -t freebsd-ufs -l r$rev md$md
+gpart set -a bootme -i 2 md$md
+newfs /dev/gpt/r$rev
+tunefs -J disable -j disable -n disable -o space -m 0 /dev/gpt/r$rev
+mount /dev/gpt/r$rev $mnt
+`cd $dir && make -DNO_GAMES=YES installworld distribution installkernel DESTDIR=$mnt`
+echo "/dev/gpt/r${rev}	/	ufs	ro	1	1" >> $mnt/etc/fstab
+echo "ifconfig_DEFAULT=\"DHCP\"" >>  $mnt/etc/rc.conf
+echo "varmfs=\"NO\"" >>  $mnt/etc/rc.conf
+echo "nameserver	8.8.8.8" >>  $mnt/etc/resolv.conf
+echo "init_script=\"/etc/found-rwfs.sh\"" >>  $mnt/boot/loader.conf
+
+cp found-rwfs.sh $mnt/etc
+chmod +x $mnt/etc
+
+#mount points MUST be on RO system :) You should create mountpoint (dirs) for your zfs too.
+mkdir $mnt/etc-rw
+mkdir $mnt/var-rw
+
+#we really need to boot.
+gpart bootcode -b $mnt/boot/pmbr -p $mnt/boot/gptboot -i 1 md$md
+
+
+sync
+sleep 5
+sync
+umount $mnt
+dd if=/dev/md$md bs=128M of=r${rev}.flat
+mdconfig -du $md
+
+# that's optional part if you plan dd flat image to some flash and boot from it.
+VBoxManage convertfromraw r${rev}.flat r${rev}.vdi
+
+VBoxManage clonehd r${rev}.vdi r${rev}.vmdk --format VMDK --variant Fixed
+
+mv r${rev}.vmdk r${rev}.vmdk.orig
+
+./convert-vmdk-ata-to-scsi.sh r${rev}.vmdk
