@@ -7,6 +7,9 @@ md="7"
 #mount point to install there as DESTDIR
 mnt="/mnt"
 
+#type="mbr"
+type="gpt"
+
 getSvnRevision(){
 # returns SVN rev as number from given dir
 #1 - dirpath
@@ -14,48 +17,88 @@ svnrev=`cd $1 && svn info | grep "Last Changed Rev" | awk '{split($0, f, " "); p
 echo $svnrev
 }
 
-
 rev=`getSvnRevision "$dir"`
 echo "Going create GPT image for $dir = $rev ..."
 echo "Assuming all is built."
-mdconfig -a -t malloc -s 750M -u $md
-gpart create -s GPT md$md
+mdconfig -a -t malloc -s 800M -u $md
+gpart create -s ${type} md$md
+
+if [ "$type" = "gpt" ] ; then
 gpart add -t freebsd-boot -s 128k md$md
 gpart add -t freebsd-ufs -l r$rev md$md
 gpart set -a bootme -i 2 md$md
 newfs /dev/gpt/r$rev
 tunefs -J disable -j disable -n disable -o space -m 0 /dev/gpt/r$rev
 mount /dev/gpt/r$rev $mnt
+else
+gpart add -t freebsd -i 1 md${md}
+gpart create -s bsd md${md}s1
+gpart add -t freebsd-ufs -i 1 md${md}s1
+newfs /dev/md${md}s1a
+tunefs -J disable -j disable -n disable -o space -m 0 /dev/md${md}s1a
+mount /dev/md${md}s1a $mnt
+fi
+
+echo "begin install."
+
 `cd $dir && make -DNO_GAMES=YES installworld distribution installkernel DESTDIR=$mnt`
+
+echo "done install."
+
+if [ "$type" = "gpt" ] ; then
 echo "/dev/gpt/r${rev}	/	ufs	ro	1	1" >> $mnt/etc/fstab
+else
+echo "/dev/da0s1a	/	ufs	ro	1	1" >> $mnt/etc/fstab
+fi
+echo "fdesc	/dev/fd		fdescfs	rw	0	0" >>  $mnt/etc/fstab
+echo "proc	/proc		procfs	rw	0	0" >>  $mnt/etc/fstab
+
 echo "ifconfig_DEFAULT=\"DHCP\"" >>  $mnt/etc/rc.conf
 echo "varmfs=\"NO\"" >>  $mnt/etc/rc.conf
+echo "tmpfs=\"NO\"" >>  $mnt/etc/rc.conf
+echo "hostname=\"r${rev}\"" >>  $mnt/etc/rc.conf
+echo "fsck_enable=\"YES\"" >>  $mnt/etc/rc.conf
+echo "fsck_y_enable=\"YES\"" >>  $mnt/etc/rc.conf
+echo "sshd_enable=\"YES\"" >>  $mnt/etc/rc.conf
 echo "nameserver	8.8.8.8" >>  $mnt/etc/resolv.conf
-echo "init_script=\"/etc/found-rwfs.sh\"" >>  $mnt/boot/loader.conf
+echo "init_script=\"/etc/find-rwfs.sh\"" >>  $mnt/boot/loader.conf
+echo "autoboot_delay=\"2"\" >>  $mnt/boot/loader.conf
 
-cp found-rwfs.sh $mnt/etc
+echo "testroot" | pw -V $mnt/etc usermod root -h 0
+echo "PermitRootLogin yes" >> $mnt/etc/ssh/sshd_config
+cp find-rwfs.sh $mnt/etc
 chmod +x $mnt/etc
+
+mv $mnt/var $mnt/var-blank
+rm -fr $mnt/usr/src
 
 #mount points MUST be on RO system :) You should create mountpoint (dirs) for your zfs too.
 mkdir $mnt/etc-rw
 mkdir $mnt/var-rw
 
-#we really need to boot.
-gpart bootcode -b $mnt/boot/pmbr -p $mnt/boot/gptboot -i 1 md$md
+#that's for zfs zpool
+mkdir $mnt/zstorage
+tar -Jcf $mnt/src-sys-r${rev}.tar.xz -C ${dir} sys
+ln -s /usr/local/home $mnt/home
+ln -s /usr/local/home $mnt/usr/home
+ln -s /usr/local/ports $mnt/usr/ports
+ln -s /usr/local/src $mnt/usr/src
+ln -s /usr/local/varroot $mnt/var
+ln -s /usr/local/bin/perl $mnt/usr/bin/perl
 
+#we really need to boot.
+if [ "$type" = "gpt" ] ; then
+gpart bootcode -b $mnt/boot/pmbr -p $mnt/boot/gptboot -i 1 md$md
+else
+gpart bootcode -b ${mnt}/boot/boot0 md${md}
+gpart bootcode -b ${mnt}/boot/boot md${md}s1
+fi
 
 sync
 sleep 5
 sync
 umount $mnt
-dd if=/dev/md$md bs=128M of=r${rev}.flat
+dd if=/dev/md$md bs=128M of=r${rev}-flat.vmdk
 mdconfig -du $md
 
-# that's optional part if you plan dd flat image to some flash and boot from it.
-VBoxManage convertfromraw r${rev}.flat r${rev}.vdi
-
-VBoxManage clonehd r${rev}.vdi r${rev}.vmdk --format VMDK --variant Fixed
-
-mv r${rev}.vmdk r${rev}.vmdk.orig
-
-./convert-vmdk-ata-to-scsi.sh r${rev}.vmdk
+./create-scsi-vmdk.sh r${rev}
