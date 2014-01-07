@@ -12,6 +12,8 @@ createVmdkFiles() {
 #1 - filename, w/o .vmdk extension
 #2 - size, in MBs;
 
+f="$1.vmdk"
+
 heads="16"
 sectors="63"
 length="`bc -e '$2*1024*1024/512' -e quit`"

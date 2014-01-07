@@ -1,10 +1,1 @@
-Currently I'm working on rewriting image-creating scripts, in scripts-v2 directory.
-
-Main run scripts called function after function, and storing state to directory.
-Config file for this is pretty simple.
-Note - that to build image you need to have spare space in any of disks (I mean real, unpartitioned space).
-Since `mdconfig` under FreeBSD is currently lagging lag, it's waaaaay faster to have separate partition as test build.
-
-Current problems:
- - devel/icu on CURRENT is failed to build (workaround Makefile present, with tests disabled)
- - problems with miniruby / automoc ( hangs in umtxn state, need more investigate on this)
+This part is pretty obsolete. Consider look into freebsd-firmware.
