@@ -1,48 +1,34 @@
 #!/bin/sh
 
-#here we have our SRC tree.
-dir="/zstorage/src-clone"
-#handy to have chosen md num for build.
-md="7"
-#mount point to install there as DESTDIR
-mnt="/mnt"
+. $1
 
-#type="mbr"
-type="gpt"
+. firmware-functions.sh
 
-getSvnRevision(){
-# returns SVN rev as number from given dir
-#1 - dirpath
-svnrev=`cd $1 && svn info | grep "Last Changed Rev" | awk '{split($0, f, " "); print f[4];}' `
-echo $svnrev
-}
+dir="${zpoolmnt}/${clonedir}"
 
 rev=`getSvnRevision "$dir"`
-echo "Going create GPT image for $dir = $rev ..."
-echo "Assuming all is built."
-mdconfig -a -t malloc -s 800M -u $md
+echo "Going create ${type} image for $dir = $rev ..."
+
+mdconfig -a -t malloc -s ${imgsize}M -u $md
 gpart create -s ${type} md$md
 
 if [ "$type" = "gpt" ] ; then
 gpart add -t freebsd-boot -s 128k md$md
 gpart add -t freebsd-ufs -l r$rev md$md
 gpart set -a bootme -i 2 md$md
-newfs /dev/gpt/r$rev
-tunefs -J disable -j disable -n disable -o space -m 0 /dev/gpt/r$rev
-mount /dev/gpt/r$rev $mnt
+device="/dev/gpt/r$rev"
 else
 gpart add -t freebsd -i 1 md${md}
 gpart create -s bsd md${md}s1
 gpart add -t freebsd-ufs -i 1 md${md}s1
-newfs /dev/md${md}s1a
-tunefs -J disable -j disable -n disable -o space -m 0 /dev/md${md}s1a
-mount /dev/md${md}s1a $mnt
+device="/dev/md${md}s1a"
 fi
 
+newfs ${device}
+tunefs -J disable -j disable -n disable -o space -m 0 ${device}
+mount ${device} $mnt
 echo "begin install."
-
 `cd $dir && make -DNO_GAMES=YES installworld distribution installkernel DESTDIR=$mnt`
-
 echo "done install."
 
 if [ "$type" = "gpt" ] ; then
@@ -66,7 +52,10 @@ echo "autoboot_delay=\"2"\" >>  $mnt/boot/loader.conf
 
 echo "testroot" | pw -V $mnt/etc usermod root -h 0
 echo "PermitRootLogin yes" >> $mnt/etc/ssh/sshd_config
+
+#Copy our scripts
 cp find-rwfs.sh $mnt/etc
+cp prepare-localfs $mnt/root
 chmod +x $mnt/etc
 
 mv $mnt/var $mnt/var-blank
@@ -76,9 +65,15 @@ rm -fr $mnt/usr/src
 mkdir $mnt/etc-rw
 mkdir $mnt/var-rw
 
+if [ -n "${zfsdir}" ] ; then
 #that's for zfs zpool
-mkdir $mnt/zstorage
+mkdir $mnt/${zfsdir}
+fi
+
+#pack sources, just in case
 tar -Jcf $mnt/src-sys-r${rev}.tar.xz -C ${dir} sys
+
+#symlinks
 ln -s /usr/local/home $mnt/home
 ln -s /usr/local/home $mnt/usr/home
 ln -s /usr/local/ports $mnt/usr/ports
@@ -98,7 +93,7 @@ sync
 sleep 5
 sync
 umount $mnt
-dd if=/dev/md$md bs=128M of=r${rev}-flat.vmdk
+dd if=/dev/md$md bs=32M of=r${rev}-flat.vmdk
 mdconfig -du $md
 
-./create-scsi-vmdk.sh r${rev}
+createVmdkFiles "r${rev}" "${imgsize}"

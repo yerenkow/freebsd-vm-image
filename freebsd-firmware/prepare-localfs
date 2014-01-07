@@ -1,0 +1,36 @@
+#!/bin/sh
+
+#assuming /usr/local created and mounted
+
+mkdir /usr/local/home
+mkdir /usr/local/ports
+mkdir /usr/local/src
+mkdir /usr/local/tmp
+mkdir /usr/local/root-rw
+
+mkdir /usr/local/varroot
+
+#after that, we need to get blank var files to our new varroot
+tar -C /var/var-blank -cvpf - . | tar -C /usr/local/varroot -xvf -
+
+#last step - if there's not localfs exists, let's create it in file;
+
+etcfs="/dev/gpt/etcfs"
+etcfsfile="/usr/local/etc-md.img"
+
+#any MD, high enough to not conflict
+mdnum=8
+
+while [ -e /dev/md${mdnum} ] ; do
+    mdnum=`bc -e ${mdnum}+1 -e quit`
+done
+
+if [ ! -e $etcfs -a ! -e ${etcfsfile} ]; then
+    touch ${etcfsfile}
+    truncate -s 128M ${etcfsfile}
+    mdconfig -af ${etcfsfile} -u ${mdnum}
+    gpart create -s GPT md${mdnum}
+    gpart add -t freebsd-ufs -l etcfs md${mdnum}
+    sync
+    newfs ${etcfs}
+fi
