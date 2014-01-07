@@ -30,6 +30,7 @@ How To
 ------
 
 First, you need zpool where you'll checkout source tree.
+
     #zfs create zbuilder/src
     #zfs create zbuilder/src/src-stable-9
     #cd /zbuilder/src/src-stable-9
@@ -38,11 +39,13 @@ First, you need zpool where you'll checkout source tree.
 Next, you need to create config file, for example called *config9.sh*
 Best is to copy *sample-config.sh* and tweak it.
 After this, you ready to build sources
+
     #./full-cycle.sh config9.sh
 
 If all went good, you'll get world & kernel built.
 If not - eliminate errors.
 Next, when all is built - you ready to create image:
+
     #./create-bsd-image config9.sh
 
 After this, you'll see something like *r300000-flat.vmdk* and *r300000.vmdk*.
@@ -53,6 +56,7 @@ After you add this image to your VM and ensured that at least you are booted, sh
 enough size to contain your data and packages. This disk will be normally seen as *da1* in FreeBSD.
 
 Next steps:
+
 1. boot your VM, log in
 2. #gpart create -s GPT /dev/da1
 3. #gpart add -t freebsd-ufs -l localfs /dev/da1
