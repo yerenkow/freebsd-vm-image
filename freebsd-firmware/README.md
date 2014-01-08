@@ -38,6 +38,32 @@ First, you need zpool where you'll checkout source tree.
 
 Next, you need to create config file, for example called *config9.sh*
 Best is to copy *sample-config.sh* and tweak it.
+Here's content of *sample-config.sh*:
+
+    #pool, where all heppens
+    zpool="zbuilder"
+    #where pool mounted
+    zpoolmnt="/zbuilder"
+
+    #src dir, relative to pool path
+    srcdir="src/src-10-stable"
+
+    #clone dir, relative to pool path
+    clonedir="src/src-10-stable-clone"
+
+    #md number, to provide independent builds
+    md="7"
+
+    #mount point, to provide independent builds
+    mnt="/mnt"
+
+    #future changes could require tweak this
+    imgsize=800
+
+    # you better stick to GPT, if you not have faulty BIOS
+    #type="mbr"
+    type="gpt"
+
 After this, you ready to build sources
 
     #./full-cycle.sh config9.sh

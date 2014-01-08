@@ -8,10 +8,22 @@ mkdir /usr/local/src
 mkdir /usr/local/tmp
 mkdir /usr/local/root-rw
 
+mkdir -p /usr/local/etc/pkg/repos
+
+pkgconf="/usr/local/etc/pkg/repos/freebsd.conf"
+if [ ! -e ${pkgconf} ]; then
+echo "quarterly: {
+ url:\"pkg+http://pkg.freebsd.org/\${ABI}/quarterly\",
+ mirror_type:\"srv\",
+ enabled: yes
+}
+" > ${pkgconf}
+fi
+
 mkdir /usr/local/varroot
 
 #after that, we need to get blank var files to our new varroot
-tar -C /var/var-blank -cvpf - . | tar -C /usr/local/varroot -xvf -
+tar -C /var-blank -cvpf - . | tar -C /usr/local/varroot -xvf -
 
 #last step - if there's not localfs exists, let's create it in file;
 
