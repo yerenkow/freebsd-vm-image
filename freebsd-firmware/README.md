@@ -40,7 +40,7 @@ Next, you need to create config file, for example called *config9.sh*
 Best is to copy *sample-config.sh* and tweak it.
 Here's content of *sample-config.sh*:
 
-    #pool, where all heppens
+    #pool, where all happens
     zpool="zbuilder"
     #where pool mounted
     zpoolmnt="/zbuilder"
@@ -76,10 +76,11 @@ Next, when all is built - you ready to create image:
 
 After this, you'll see something like *r300000-flat.vmdk* and *r300000.vmdk*.
 Flat file can be *dd* to USB flash or card, and can be used to boot.
-VMDK file can be used in VirtualBox and VMWare ESXi.
+VMDK file can be used in VirtualBox (You better use it as SATA/SCSI disk, to not stick with 33 Mb speed)
+ and VMWare ESXi (Which detects it just fine and use it at full SATA-300 speed).
 
 After you add this image to your VM and ensured that at least you are booted, shut your VM down and add one more disk,
-enough size to contain your data and packages. This disk will be normally seen as *da1* in FreeBSD.
+enough size to contain your data and packages. This disk will be normally seen as *da1* (*ada1*) in FreeBSD.
 
 Next steps:
 
