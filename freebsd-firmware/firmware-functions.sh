@@ -16,8 +16,8 @@ f="$1.vmdk"
 
 heads="16"
 sectors="63"
-length="`bc -e '$2*1024*1024/512' -e quit`"
-cylinders="`bc -e '${length}/${heads}/${sectors}' -e quit`"
+length="`bc -e $2*1024*1024/512 -e quit`"
+cylinders="`bc -e ${length}/${heads}/${sectors} -e quit`"
 
 
 #cid - is most important here, as it's random ID of our image.
