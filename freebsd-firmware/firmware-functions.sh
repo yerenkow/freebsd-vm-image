@@ -41,6 +41,6 @@ ddb.uuid.longContentID=\"$cid$cid$cid$cid\"
 ddb.geometry.cylinders=\"$cylinders\"
 ddb.geometry.heads=\"$heads\"
 ddb.geometry.sectors=\"$sectors\"
-ddb.adapterType=\"lsilogic\"" >> $f
+ddb.adapterType=\"lsilogic\"" > $f
 
 }

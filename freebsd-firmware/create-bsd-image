@@ -41,10 +41,9 @@ echo "proc	/proc		procfs	rw	0	0" >>  $mnt/etc/fstab
 
 echo "ifconfig_DEFAULT=\"DHCP\"" >>  $mnt/etc/rc.conf
 echo "varmfs=\"NO\"" >>  $mnt/etc/rc.conf
-echo "tmpfs=\"NO\"" >>  $mnt/etc/rc.conf
+echo "tmpmfs=\"NO\"" >>  $mnt/etc/rc.conf
 echo "hostname=\"r${rev}\"" >>  $mnt/etc/rc.conf
-echo "fsck_enable=\"YES\"" >>  $mnt/etc/rc.conf
-echo "fsck_y_enable=\"YES\"" >>  $mnt/etc/rc.conf
+echo "fsck_enable=\"NO\"" >>  $mnt/etc/rc.conf
 echo "sshd_enable=\"YES\"" >>  $mnt/etc/rc.conf
 echo "nameserver	8.8.8.8" >>  $mnt/etc/resolv.conf
 echo "init_script=\"/etc/find-rwfs.sh\"" >>  $mnt/boot/loader.conf
